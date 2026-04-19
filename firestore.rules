@@ -1,0 +1,53 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Reuseable helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      // The user wants to "watch" the details. 
+      // We'll allow the specific user email to read.
+      return isSignedIn() && (
+        request.auth.token.email == "mohamedfazilrm5@gmail.com" && 
+        request.auth.token.email_verified == true
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    match /contacts/{contactId} {
+      // Validation helper
+      function isValidContact(data) {
+        return data.keys().hasAll(['name', 'email', 'message', 'createdAt']) &&
+               data.keys().size() == 4 &&
+               data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+               data.email is string && data.email.matches('^[^@]+@[^@]+\\.[^@]+$') &&
+               data.message is string && data.message.size() > 0 && data.message.size() <= 5000 &&
+               data.createdAt == request.time;
+      }
+
+      // Anyone can submit a contact message
+      allow create: if isValidContact(incoming());
+      
+      // Only the admin (Shafiah/User) can read the submissions
+      allow get, list: if isAdmin();
+      
+      // Nobody can update or delete messages via client SDK for integrity
+      allow update, delete: if false;
+    }
+  }
+}

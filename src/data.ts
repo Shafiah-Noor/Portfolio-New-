@@ -29,7 +29,7 @@ export const educationData: Education[] = [
     type: 'school',
     year: '2022 - 2023',
     degree: 'TN HSC',
-    school: 'Princess Matriculation Higher Secondary School',
+    school: 'Doveton Girls Higher Secondary School',
     desc: 'Completed Higher Secondary Education with a focus on Computer Science and Mathematics.',
     fullDesc: 'During my time at Princess Matriculation, I achieved a 90% in the TN HSC examinations. My curriculum focused heavily on Computer Science and Mathematics, complemented by French as a second language. This rigorous academic environment helped me develop strong logical reasoning and linguistic skills.',
     image: "/Shafiah-School.png",
